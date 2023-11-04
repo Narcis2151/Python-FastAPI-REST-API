@@ -1,25 +1,27 @@
 from .database import Base
-from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Boolean, DateTime, ForeignKey
 from datetime import datetime
-
-class Post(Base):
-    __tablename__ = "posts"
-
-    id = Column(Integer, primary_key=True, nullable=False)
-    title = Column(String, nullable=False)
-    content = Column(String, nullable=False)
-    published = Column(Boolean, nullable=False, server_default="TRUE")
-    created = Column(
-        TIMESTAMP(timezone=True), nullable=False, server_default=text("NOW()")
-    )
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    email = Column(String, nullable=False)
-    password = Column(String, nullable=False)
-    created = Column(
-        TIMESTAMP(timezone=True), nullable=False, server_default=text("NOW()")
-    )
+    user_id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
+    email: Mapped[str] = mapped_column(nullable=False)
+    password: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(server_default="NOW()")
+
+    posts: Mapped[list["Post"]] = relationship(back_populates="user")
+
+
+class Post(Base):
+    __tablename__ = "post"
+
+    post_id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
+    title: Mapped[str] = mapped_column(nullable=False)
+    content: Mapped[str] = mapped_column(nullable=False)
+    published: Mapped[bool] = mapped_column(server_default="true")
+    created_at: Mapped[datetime] = mapped_column(server_default="NOW()")
+    user_id = mapped_column(ForeignKey("user.user_id"))
+    user: Mapped["User"] = relationship(back_populates="posts")

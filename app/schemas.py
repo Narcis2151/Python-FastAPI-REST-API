@@ -13,8 +13,8 @@ class PostCreate(PostBase):
 
 
 class Post(PostBase):
-    id: int
-    created: datetime
+    post_id: int
+    created_at: datetime
 
     class Config:
         from_attributes = True
@@ -26,9 +26,9 @@ class UserCreate(BaseModel):
 
 
 class UserOut(BaseModel):
-    id: int
+    user_id: int
     email: EmailStr
-    created: datetime
+    created_at: datetime
 
     class Config:
         from_attributes = True
