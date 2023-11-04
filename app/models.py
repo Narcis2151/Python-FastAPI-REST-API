@@ -2,7 +2,6 @@ from .database import Base
 from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, text
 from datetime import datetime
 
-
 class Post(Base):
     __tablename__ = "posts"
 
@@ -24,4 +23,3 @@ class User(Base):
     created = Column(
         TIMESTAMP(timezone=True), nullable=False, server_default=text("NOW()")
     )
-

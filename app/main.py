@@ -64,3 +64,12 @@ async def delete_post(post_id: int, db: Session = Depends(get_db)):
     post_query.delete(synchronize_session=False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    user = models.User(**user.model_dump())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
