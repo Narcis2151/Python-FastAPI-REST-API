@@ -4,12 +4,10 @@ from .. import models, schemas
 from ..database import get_db
 from ..utils import pwd_context
 
-user_router = APIRouter()
+router = APIRouter(prefix="/users")
 
 
-@user_router.post(
-    "/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut
-)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     user = models.User(**user.model_dump())
     user.password = pwd_context.hash(user.password)
@@ -19,7 +17,7 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return user
 
 
-@user_router.get("/users/{user_id}", response_model=schemas.UserOut)
+@router.get("/{user_id}", response_model=schemas.UserOut)
 async def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
