@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI, HTTPException, Response, status
 from sqlalchemy.orm import Session
 from . import models, schemas
 from .database import get_db, engine, Base
+from .utils import pwd_context
 
 Base.metadata.create_all(engine)
 
@@ -69,6 +70,7 @@ async def delete_post(post_id: int, db: Session = Depends(get_db)):
 @app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     user = models.User(**user.model_dump())
+    user.password = pwd_context.hash(user.password)
     db.add(user)
     db.commit()
     db.refresh(user)
