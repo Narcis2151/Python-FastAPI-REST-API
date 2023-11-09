@@ -2,8 +2,14 @@ from fastapi import Depends, Response, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from .. import models, schemas
 from ..database import get_db
+from ..oauth2 import get_current_user
 
-router = APIRouter(prefix="/posts", tags=["Posts"])
+# from ..oauth2 import verify_access_token
+
+router = APIRouter(
+    prefix="/posts",
+    tags=["Posts"],  # dependencies=[Depends(verify_access_token)]
+)
 
 
 @router.get("", response_model=list[schemas.Post])
@@ -47,7 +53,11 @@ async def update_post(
     return post_query.first()
 
 
-@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{post_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(get_current_user)],
+)
 async def delete_post(post_id: int, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.post_id == post_id)
     if not post_query.first():

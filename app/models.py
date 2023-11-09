@@ -4,7 +4,7 @@ from sqlalchemy import String, Boolean, DateTime, ForeignKey
 from datetime import datetime
 
 
-class User(Base):
+class User(Base):   
     __tablename__ = "user"
 
     user_id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
