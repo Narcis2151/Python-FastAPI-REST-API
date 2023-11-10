@@ -40,4 +40,4 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         detail="Invalid authentication credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    verify_access_token(token, exception)
+    return verify_access_token(token, exception)
