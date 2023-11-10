@@ -5,7 +5,6 @@ from .. import models, schemas
 from ..database import get_db
 from ..oauth2 import get_current_user
 
-# from ..oauth2 import verify_access_token
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -28,16 +27,16 @@ async def get_post_by_id(post_id: int, db: Session = Depends(get_db)):
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 async def create_item(
-    post: schemas.PostCreate,
+    post: schemas.PostBase,
     user_data: Annotated[schemas.TokenData, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
     db_post = models.Post(**post.model_dump())
     db_post.user_id = user_data.user_id
-    db.add(post)
+    db.add(db_post)
     db.commit()
-    db.refresh(post)
-    return post
+    db.refresh(db_post)
+    return db_post
 
 
 @router.put("/{post_id}", response_model=schemas.Post)
